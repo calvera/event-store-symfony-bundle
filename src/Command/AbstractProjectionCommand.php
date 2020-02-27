@@ -11,6 +11,7 @@ use Prooph\EventStore\Projection\ProjectionManager;
 use Prooph\EventStore\Projection\Projector;
 use Prooph\EventStore\Projection\ReadModel;
 use Prooph\EventStore\Projection\ReadModelProjector;
+use Prooph\Snapshotter\StreamSnapshotProjection;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -109,6 +110,8 @@ abstract class AbstractProjectionCommand extends Command
 
         if ($this->projection instanceof Projection) {
             $this->projector = $this->projectionManager->createProjection($this->projectionName);
+        } elseif ($this->projection instanceof StreamSnapshotProjection) {
+            $this->projector = $this->projection;
         }
 
         if (null === $this->projector) {

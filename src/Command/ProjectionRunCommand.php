@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Prooph\Bundle\EventStore\Command;
 
+use Prooph\Bundle\EventStore\Projection\Projection;
+use Prooph\Snapshotter\StreamSnapshotProjection;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -31,7 +33,13 @@ class ProjectionRunCommand extends AbstractProjectionCommand
             )
         );
 
-        $projector = $this->projection->project($this->projector);
+        if ($this->projection instanceof StreamSnapshotProjection) {
+            ($this->projection)();
+            $projector = $this->projector;
+        } else {
+            $projector = $this->projection->project($this->projector);
+        }
+
         $projector->run($keepRunning);
         $output->writeln(\sprintf('<action>Projection <highlight>%s</highlight> completed.</action>', $this->projectionName));
 
